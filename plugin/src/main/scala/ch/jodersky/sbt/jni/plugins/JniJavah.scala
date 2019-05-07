@@ -27,20 +27,16 @@ object JniJavah extends AutoPlugin {
   import autoImport._
 
   lazy val mainSettings: Seq[Setting[_]] = Seq(
-
     javahClasses in javah := {
       import xsbti.compile._
       val compiled: CompileAnalysis = (compile in Compile).value
-      val classFiles: Set[File] = compiled.readStamps().getAllProductStamps()
-        .asScala.keySet.toSet
+      val classFiles: Set[File] = compiled.readStamps().getAllProductStamps().asScala.keySet.toSet
       val nativeClasses = classFiles flatMap { file =>
         BytecodeUtil.nativeClasses(file)
       }
       nativeClasses
     },
-
     target in javah := target.value / "native" / "include",
-
     javah := {
       val out = (target in javah).value
 
@@ -62,8 +58,10 @@ object JniJavah extends AutoPlugin {
         log.info("Generating header for " + clazz)
         val parts = Seq(
           "javah",
-          "-d", out.getAbsolutePath,
-          "-classpath", cp,
+          "-d",
+          out.getAbsolutePath,
+          "-classpath",
+          cp,
           clazz
         )
         val cmd = parts.mkString(" ")

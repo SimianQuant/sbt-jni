@@ -58,7 +58,7 @@ trait BuildTool {
       * @return the native library file
       */
     def library(
-      targetDirectory: File
+        targetDirectory: File
     ): File
 
   }

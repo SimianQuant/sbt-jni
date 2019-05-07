@@ -45,11 +45,8 @@ object JniPackage extends AutoPlugin {
   import JniNative.autoImport._
 
   lazy val settings: Seq[Setting[_]] = Seq(
-
     enableNativeCompilation := true,
-
     unmanagedNativeDirectories := Seq(baseDirectory.value / "lib_native"),
-
     unmanagedNativeLibraries := {
       val mappings: Seq[(File, String)] = unmanagedNativeDirectories.value.flatMap { dir =>
         val files: Seq[File] = (dir ** "*").get.filter(_.isFile)
@@ -57,22 +54,21 @@ object JniPackage extends AutoPlugin {
       }
       mappings
     },
+    managedNativeLibraries := Def
+      .taskDyn[Seq[(File, String)]] {
+        val enableManaged = (enableNativeCompilation).value
+        if (enableManaged) Def.task {
+          val library: File = nativeCompile.value
+          val platform = nativePlatform.value
 
-    managedNativeLibraries := Def.taskDyn[Seq[(File, String)]] {
-      val enableManaged = (enableNativeCompilation).value
-      if (enableManaged) Def.task {
-        val library: File = nativeCompile.value
-        val platform = nativePlatform.value
-
-        Seq(library -> s"/native/$platform/${library.name}")
+          Seq(library -> s"/native/$platform/${library.name}")
+        } else
+          Def.task {
+            Seq.empty
+          }
       }
-      else Def.task {
-        Seq.empty
-      }
-    }.value,
-
+      .value,
     nativeLibraries := unmanagedNativeLibraries.value ++ managedNativeLibraries.value,
-
     resourceGenerators += Def.task {
       val libraries: Seq[(File, String)] = nativeLibraries.value
       val resources: Seq[File] = for ((file, path) <- libraries) yield {
@@ -87,7 +83,6 @@ object JniPackage extends AutoPlugin {
       }
       resources
     }.taskValue
-
   )
 
   override lazy val projectSettings = inConfig(Compile)(settings) ++ inConfig(Test)(settings) ++

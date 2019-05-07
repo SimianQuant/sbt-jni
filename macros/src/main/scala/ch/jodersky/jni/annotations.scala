@@ -1,13 +1,18 @@
 package ch.jodersky.jni
 
-import macrocompat.bundle
+// import macrocompat.bundle
 
 import scala.language.experimental.macros
 import scala.reflect.macros.whitebox.Context
 import scala.annotation.StaticAnnotation
 import scala.annotation.compileTimeOnly
 
-@bundle
+@compileTimeOnly("Macro Paradise must be enabled to apply annotation.")
+class nativeLoader(nativeLibrary: String) extends StaticAnnotation {
+  def macroTransform(annottees: Any*): Any = macro nativeLoaderMacro.impl
+}
+
+// @bundle
 class nativeLoaderMacro(val c: Context) {
 
   def impl(annottees: c.Expr[Any]*): c.Expr[Any] = {
@@ -47,19 +52,9 @@ class nativeLoaderMacro(val c: Context) {
 
               val tmp: Path = Files.createTempDirectory("jni-")
               val plat: String = {
-                val line = try {
-                  scala.sys.process.Process("uname -sm").lines.head
-                } catch {
-                  case ex: Exception => sys.error("Error running `uname` command")
-                }
-                val parts = line.split(" ")
-                if (parts.length != 2) {
-                  sys.error("Could not determine platform: 'uname -sm' returned unexpected string: " + line)
-                } else {
-                  val arch = parts(1).toLowerCase.replaceAll("\\s", "")
-                  val kernel = parts(0).toLowerCase.replaceAll("\\s", "")
-                  arch + "-" + kernel
-                }
+                val osName = ch.jodersky.sbt.jni.util.OsAndArch.OsName
+                val osArch = ch.jodersky.sbt.jni.util.OsAndArch.OsArch
+                osName + "-" + osArch
               }
 
               val resourcePath: String = "/native/" + plat + "/" + lib
@@ -105,9 +100,4 @@ class nativeLoaderMacro(val c: Context) {
     c.Expr[Any](result)
   }
 
-}
-
-@compileTimeOnly("Macro Paradise must be enabled to apply annotation.")
-class nativeLoader(nativeLibrary: String) extends StaticAnnotation {
-  def macroTransform(annottees: Any*): Any = macro nativeLoaderMacro.impl
 }
