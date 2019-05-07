@@ -5,12 +5,12 @@
 # add/modify/remove settings to build your specific library.   #
 ################################################################
 
-cmake_minimum_required(VERSION 2.8.0)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 
 # Define project and related variables
 # (required by sbt-jni) please use semantic versioning
 #
-project ({{project}} CXX)
+project ({{project}} LANGUAGES C CXX)
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 0)
 set(PROJECT_VERSION_PATCH 0)
@@ -27,7 +27,12 @@ include_directories(include)
 include_directories(${JNI_INCLUDE_DIRS})
 
 # Sources
-file(GLOB LIB_SRC "src/*.cpp")
+# file(GLOB LIB_SRC "src/*.cpp")
+file(GLOB LIB_SRC
+  "*.c"
+  "*.cc"
+  "*.cpp"
+)
 
 # Setup installation targets
 # (required by sbt-jni) major version should always be appended to library name
