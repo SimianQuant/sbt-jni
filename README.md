@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/jodersky/sbt-jni.svg?branch=master)](https://travis-ci.org/jodersky/sbt-jni)
+
 
 | sbt version | plugin version |
 |-------------|----------------|
