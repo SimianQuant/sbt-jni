@@ -22,7 +22,7 @@ install:
       }
   - ps: Install-Product node $env:nodejs_version
   - cmd: SET PATH=C:\sbt\sbt\bin;%JAVA_HOME%\bin;%PATH%
-  - cmd: SET SBT_OPTS=-XX:MaxPermSize=2g -Xmx4g
+  - cmd: SET SBT_OPTS=-Xmx4g
 
 build_script:
   - sbt clean
