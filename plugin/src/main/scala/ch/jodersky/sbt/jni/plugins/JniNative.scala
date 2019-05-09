@@ -5,7 +5,7 @@ import build._
 import ch.jodersky.sbt.jni.util.OsAndArch
 import sbt._
 import sbt.Keys._
-import sys.process._
+// import sys.process._
 
 /** Wraps a native build system in sbt tasks. */
 object JniNative extends AutoPlugin {
@@ -111,18 +111,20 @@ object JniNative extends AutoPlugin {
 
       val log = streams.value.log
 
-      def getTool(toolName: String): BuildTool = toolName.toLowerCase match {
-        case "cmake" => CMake
-        case _ => sys.error("Unsupported build tool: " + toolName)
-      }
+      // def getTool(toolName: String): BuildTool = toolName.toLowerCase match {
+      //   case "cmake" => CMake
+      //   case _ => sys.error("Unsupported build tool: " + toolName)
+      // }
 
+      // val args = spaceDelimited("<tool> [<libname>]").parsed.toList
       val args = spaceDelimited("<tool> [<libname>]").parsed.toList
 
-      val (tool: BuildTool, lib: String) = args match {
-        case Nil => sys.error("Invalid arguments.")
-        case tool :: Nil => (getTool(tool), name.value)
-        case tool :: lib :: other => (getTool(tool), lib)
+      val (lib: String) = args match {
+        // case Nil => sys.error("Invalid arguments.")
+        case Nil => name.value
+        case lib :: _ => lib
       }
+      val tool = CMake
 
       log.info(s"Initializing native build with ${tool.name} configuration")
       val files = tool.initTemplate((sourceDirectory in nativeCompile).value, lib)
