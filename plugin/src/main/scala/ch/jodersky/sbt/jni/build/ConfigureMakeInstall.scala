@@ -22,12 +22,12 @@ trait ConfigureMakeInstall { self: BuildTool =>
     def configure(targetDirectory: File): ProcessBuilder
 
     def make(): ProcessBuilder = {
-      val makeCommand = if (OsAndArch.IsWindows) "msbuild /m ALL_BUILD.vcxproj" else "make VERBOSE=1"
+      val makeCommand = if (OsAndArch.IsWindows) "nmake" else "make VERBOSE=1"
       Process(makeCommand, buildDirectory)
     }
 
     def install(): ProcessBuilder = {
-      val installCommand = if (OsAndArch.IsWindows) "msbuild /m INSTALL.vcxproj" else "make install"
+      val installCommand = if (OsAndArch.IsWindows) "nmake install" else "make install"
       Process(installCommand, buildDirectory)
     }
 
