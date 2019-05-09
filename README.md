@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/SimianQuant/sbt-jni.svg?branch=master)](https://travis-ci.org/SimianQuant/sbt-jni)
+[![Build status](https://ci.appveyor.com/api/projects/status/ubaj4l9yv4e00fue?svg=true)](https://ci.appveyor.com/project/harshad-deo/sbt-jni)
+
 
 | sbt version | plugin version |
 |-------------|----------------|
