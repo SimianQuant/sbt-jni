@@ -2,7 +2,7 @@
 version: '{build}'
 os: Windows Server 2012
 
-image: Visual Studio 2017
+image: Visual Studio 2015
 
 #  To make the extended ascii characters work on Windows
 #  we need to set string encoding for jvm to utf-8 on windows
@@ -24,8 +24,8 @@ install:
       }
   - ps: Install-Product node $env:nodejs_version
   - cmd: SET PATH=C:\sbt\sbt\bin;%JAVA_HOME%\bin;%PATH%
-  - cmd: SET SBT_OPTS=-Xmx4g
-  - call: C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat
+  - cmd:  call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
+  - cmd:  call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
 
 build_script:
   - sbt clean
