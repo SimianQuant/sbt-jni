@@ -126,7 +126,7 @@ This plugin packages native libraries produced by JniNative in a way that they c
 
 2. Initialize the native build tool from a template:
 
-   Run `sbt "nativeInit cmake <libname>"`
+   Run `sbt "nativeInit <libname>"`
 
 3. Implement core project:
 
@@ -149,22 +149,7 @@ This plugin packages native libraries produced by JniNative in a way that they c
    The usual iterative development process. Nothing speial needs to be done, except in case any `@native` methods are added/removed or their signature changed, then `sbt javah` needs to be run again.
 
 ## Examples
-The [plugins' unit tests](plugin/src/sbt-test/sbt-jni) offer some simple examples. They can be run individually through these steps:
+The [plugins' unit tests](plugin/src/sbt-test/sbt-jni) offer some simple examples.
 
-1. Publish the macros library locally `sbt publishLocal`.
-2. Change to the test's directory and run `sbt -Dplugin.version=<version>`.
-3. Follow the instructions in the `test` file (only enter the lines that start with ">" into sbt).
-
-Real-world use-cases of sbt-jni include:
-
-- [serial communication library for scala](https://github.com/jodersky/akka-serial)
-
-## Requirements and Dependencies
-
-- projects using `JniLoad` must use Scala versions 2.10, 2.11 or 2.12
-- only POSIX platforms are supported (actually, any platform that has the `uname` command available)
-
-The goal of sbt-jni is to be the least intrusive possible. No transitive dependencies are added to projects using any plugin (some dependencies are added to the `provided` configuration, however these do not affect any downstream projects).
-
-## Copying
+## License
 This project is released under the terms of the 3-clause BSD license. See LICENSE for details.
