@@ -9,63 +9,44 @@ from [sbt-jni](https://github.com/jodersky/sbt-jni/tree/master/plugin/src) to su
 
 ## To Use 
 
-Add the following line to `plugins.sbt` in the project folder:
+The plugin only supports sbt 1.x. To use, add the following line to `project/plugins.sbt`:
 
 ```scala
 addSbtPlugin("com.simianquant" % "sbt-jni" % "0.1.0")
 ```
 
+## Dependencies
 
+The plugin uses [CMake](https://cmake.org/) to build the native implementations. 
 
+1. On Linux, the default `Makefile` generator is used and no additional configuration, post installation of CMake, should be necessary
+1. On Windows, the `NMake Makefile` generator is used. `NMake` is distributed as a part of Visual Studio. The MSVC toolset should 
+be available on the path. Instructions on how to do it can be found [here](https://docs.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=vs-2019). 
 
-A suite of sbt plugins for simplifying creation and distribution of JNI programs.
-
-## Motivation
-Java Native Interface (JNI), is a framework that enables programs written in a JVM language to interact with native code and vice-versa. Such programs can be divided into two logical parts: the JVM part, consisting of sources that will be compiled to bytecode (e.g. Scala or Java), and the native part, consisting of sources that will be compiled to machine-native code (e.g. C, C++ or assembly).
-
-Using native code can be beneficial in some situations: it can, for example, provide raw performance boosts or enable otherwise infeasable features such as interaction with peripherals. However, it also adds a few layers of complexities, most notably:
-
-- Compilation: the project is divided into two parts, each of which require separate compilation.
-- Portability: native binaries only run on the platform on which they were compiled.
-- Distribution: native binaries must be made available and packaged for every supported platform.
-
-The second point, portability, is inherent to JNI and thus unavoidable. However the first and last points can be greatly simplified with the help of build tools.
+Additionally, `javah` should be on the path.
 
 ## Plugin Summary
 
-| Plugin     | Description                                                                                            |
-|------------|--------------------------------------------------------------------------------------------------------|
-| JniJavah   | Adds support for generating headers from classfiles that have `@native` methods.                       |
-| JniLoad    | Makes `@nativeLoader` annotation available, that injects code to transparently load native libraries.  |
-| JniNative  | Adds sbt wrapper tasks around native build tools to ease building and integrating native libraries.    |
-| JniPackage | Packages native libraries into multi-platform fat jars. No more manual library installation!     |
-
-All plugins are made available by adding the following to `project/plugins.sbt`:
-```scala
-addSbtPlugin("ch.jodersky" % "sbt-jni" % "<latest version>")
-```
-where `<latest version>` refers to the version indicated by the download badge above, or, equivalently, to the [latest version available on bintray](https://bintray.com/jodersky/sbt-plugins/sbt-jni/_latestVersion).
-
-Note that most plugins are enabled in projects by default. Disabling their functionality can be achieved by adding `disablePlugins(<plugin>)` to the corresponding project definition (for example, should you wish to disable packaging of native libraries).
-
-## Plugin Details
+| Plugin     | Description                                                                                           |  Enabled  |
+| ---------- | ----------------------------------------------------------------------------------------------------- | --------- |
+| JniJavah   | Adds support for generating headers from classfiles that have `@native` methods.                      | automatic |
+| JniLoad    | Makes `@nativeLoader` annotation available, that injects code to transparently load native libraries. | automatic |
+| JniNative  | Adds sbt wrapper tasks around native build tools to ease building and integrating native libraries.   | manual    |
+| JniPackage | Packages native libraries into multi-platform fat jars. No more manual library installation!          | automatic |
 
 ### JniJavah
 
-| Enabled                        | Source        |
-|--------------------------------|---------------|
-| automatic, for all projects    | [JniJavah.scala](plugin/src/main/scala/ch/jodersky/sbt/jni/plugins/JniJavah.scala)|
-
 This plugin wraps the JDK `javah` command.
 
-Run `sbt-javah` to generate C header files with prototypes for any methods marked as native.
-E.g. the following scala class
+Run `sbt-javah` to generate C header files with prototypes for any methods marked as native. For example, the Scala class
+
 ```scala
 package org.example
 class Adder(val base: Int) {
   @native def plus(term: Int): Int // implemented in a native library
 }
 ```
+
 will yield this prototype
 ```c
 /*
@@ -75,11 +56,11 @@ will yield this prototype
  */
 JNIEXPORT jint JNICALL Java_org_example_Adder_plus
   (JNIEnv *, jobject, jint);
-
 ```
 
 The header output directory can be configured
-```
+
+```scala
 target in javah := <dir> // defaults to target/native/include
 ```
 
@@ -87,13 +68,11 @@ Note that native methods declared both in Scala and Java are supported. Whereas 
 `native` keyword.
 
 ### JniLoad
-| Enabled                        | Source        |
-|--------------------------------|---------------|
-| automatic, for all projects    | [JniLoad.scala](plugin/src/main/scala/ch/jodersky/sbt/jni/plugins/JniLoad.scala) |
 
 This plugin enables loading native libraries in a safe and transparent manner to the developer (no more explicit, static `System.load("library")` calls required). It does so by providing a class annotation which injects native loading code to all its annottees. Furthermore, in case a native library is not available on the current `java.library.path`, the code injected by the annotation will fall back to loading native libraries packaged according to the rules of `JniPackage`.
 
-Example use:
+For example:
+
 ```scala
 import ch.jodersky.jni.nativeLoader
 
@@ -115,34 +94,24 @@ Note: this plugin is just a shorthand for adding `sbt-jni-macros` (the project i
 See the [annotation's implementation](macros/src/main/scala/ch/jodersky/jni/annotations.scala) for details about the injected code.
 
 ### JniNative
-| Enabled                        | Source        |
-|--------------------------------|---------------|
-| manual                         | [JniNative.scala](plugin/src/main/scala/ch/jodersky/sbt/jni/plugins/JniNative.scala) |
 
-JniNative adds the capability of building native code (compiling and linking) to sbt, by interfacing with commonly used build tools.
+JniNative adds the capability of building native code (compiling and linking) to sbt by interfacing with CMake. The implementation of
+this plugin is the main difference this fork and the original. The initial CMake configuration can be obtained by running `sbt nativeInit <tool>`. After this, projects are built by calling the `sbt nativeCompile` task.
 
-Since this plugin is basically a command-line wrapper, native build tools must follow certain calling conventions to be compatible. The supported build tools are currently:
+Source and output directories are configurable:
 
-- CMake
-
-An initial, compatible build template can be obtained by running `sbt nativeInit <tool>`. Once the native build tool initialised, projects are built by calling the `sbt nativeCompile` task.
-
-Source and output directories are configurable
 ```scala
 sourceDirectory in nativeCompile := sourceDirectory.value / "native",
 target in nativeCompile := target.value / "native" / (nativePlatform).value,
 ```
 
 ### JniPackage
-| Enabled                        | Source        |
-|--------------------------------|---------------|
-| automatic, when JniNative enabled | [JniPackage.scala](plugin/src/main/scala/ch/jodersky/sbt/jni/plugins/JniPackage.scala) |
 
-This plugin packages native libraries produced by JniNative in a way that they can be transparently loaded with JniLoad. It uses the notion of a native "platform", defined as the architecture-kernel values returned by `uname -sm`. A native binary of a given platform is assumed to be executable on any machines of the same platform.
+This plugin packages native libraries produced by JniNative in a way that they can be transparently loaded with JniLoad. It uses the notion of a native "platform", as defined in [this file](https://github.com/SimianQuant/sbt-jni/blob/master/util/src/main/scala/ch/jodersky/sbt/jni/util/OsAndArch.scala).
 
 ## Canonical Use
 
-*Keep in mind that sbt-jni is a __suite__ of plugins, there are many other use cases. This is a just a description of the most common one.*
+*Keep in mind that sbt-jni is a __suite__ of plugins, there are many other use cases. This is a just a description of the simplest one.*
 
 1. Define separate sub-projects for JVM and native sources. In `myproject/build.sbt`:
 
@@ -196,16 +165,6 @@ Real-world use-cases of sbt-jni include:
 - only POSIX platforms are supported (actually, any platform that has the `uname` command available)
 
 The goal of sbt-jni is to be the least intrusive possible. No transitive dependencies are added to projects using any plugin (some dependencies are added to the `provided` configuration, however these do not affect any downstream projects).
-
-## Building
-Both the macro library (`sbt-jni-macros`) and the sbt plugins (`sbt-jni`) are published. Cross-building happens on a per-project basis:
-
-- sbt-jni-macros is built against Scala 2.10, 2.11 and 2.12
-- sbt-jni is built against Scala 2.12 (the Scala version that sbt 1.x uses)
-
-The differing Scala versions make it necessary to always cross-compile and cross-publish this project, i.e. append a "+" before every task.
-
-Run `sbt +publishLocal` to build and use this plugin locally.
 
 ## Copying
 This project is released under the terms of the 3-clause BSD license. See LICENSE for details.
