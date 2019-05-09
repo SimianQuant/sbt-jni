@@ -1,13 +1,22 @@
 [![Build Status](https://travis-ci.org/SimianQuant/sbt-jni.svg?branch=master)](https://travis-ci.org/SimianQuant/sbt-jni)
 [![Build status](https://ci.appveyor.com/api/projects/status/ubaj4l9yv4e00fue?svg=true)](https://ci.appveyor.com/project/harshad-deo/sbt-jni)
 
+sbt-jni
+===
 
-| sbt version | plugin version |
-|-------------|----------------|
-| 0.13.x      | [![Download](https://api.bintray.com/packages/jodersky/sbt-plugins/sbt-jni/images/download.svg?version=1.2.6)](https://bintray.com/jodersky/sbt-plugins/sbt-jni/1.2.6/link) |
-| 1.0.x       | [![Download](https://api.bintray.com/packages/jodersky/sbt-plugins/sbt-jni/images/download.svg)](https://bintray.com/jodersky/sbt-plugins/sbt-jni/_latestVersion) |
+A suite of plugins to simplify the creation and distribution of programs that use Java Native Interface (JNI). This is forked
+from [sbt-jni](https://github.com/jodersky/sbt-jni/tree/master/plugin/src) to support Windows builds.
 
-# sbt-jni
+## To Use 
+
+Add the following line to `plugins.sbt` in the project folder:
+
+```scala
+addSbtPlugin("com.simianquant" % "sbt-jni" % "0.1.0")
+```
+
+
+
 
 A suite of sbt plugins for simplifying creation and distribution of JNI programs.
 
@@ -33,7 +42,6 @@ The second point, portability, is inherent to JNI and thus unavoidable. However 
 
 All plugins are made available by adding the following to `project/plugins.sbt`:
 ```scala
-
 addSbtPlugin("ch.jodersky" % "sbt-jni" % "<latest version>")
 ```
 where `<latest version>` refers to the version indicated by the download badge above, or, equivalently, to the [latest version available on bintray](https://bintray.com/jodersky/sbt-plugins/sbt-jni/_latestVersion).
