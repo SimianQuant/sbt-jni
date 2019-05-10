@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/SimianQuant/sbt-jni.svg?branch=master)](https://travis-ci.org/SimianQuant/sbt-jni)
 [![Build status](https://ci.appveyor.com/api/projects/status/ubaj4l9yv4e00fue?svg=true)](https://ci.appveyor.com/project/harshad-deo/sbt-jni)
 [![Download](https://api.bintray.com/packages/harshad-deo/sbt-plugins/sbt-jni/images/download.svg)](https://bintray.com/harshad-deo/sbt-plugins/sbt-jni/_latestVersion)
+[![Gitter](https://badges.gitter.im/SimianQuant/sbt-jni.svg)](https://gitter.im/SimianQuant/sbt-jni?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 sbt-jni
 ===
