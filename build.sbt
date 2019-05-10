@@ -27,9 +27,38 @@ def commonSettings(nameStr: String) = Seq(
   licenses := Seq(("BSD New", url("http://opensource.org/licenses/BSD-3-Clause")))
 )
 
+lazy val publishSettings = Seq(
+  scmInfo := Some(
+      ScmInfo(
+        url("https://github.com/SimianQuant/sbt-jni"),
+        "scm:git@github.com:SimianQuant/sbt-jni.git"
+      )
+    ),
+    developers := List(
+      Developer(
+        id = "harshad-deo",
+        name = "Harshad Deo",
+        email = "harshad@simianquant.com",
+        url = url("https://github.com/harshad-deo")
+      )
+    ),
+    homepage := Some(url("https://github.com/SimianQuant/sbt-jni")),
+    pomIncludeRepository := { _ =>
+      false
+    },
+    publishTo := {
+      val nexus = "https://oss.sonatype.org/"
+      if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
+      else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    publishMavenStyle := true
+)
+
 lazy val util = project
   .in(file("util"))
   .settings(commonSettings("sbt-jni-util"))
+  .settings(publishSettings)
+  .disablePlugins(ScriptedPlugin)
 
 lazy val macros = project
   .in(file("macros"))
@@ -41,6 +70,7 @@ lazy val macros = project
     ),
     addCompilerPlugin("org.scalamacros" % "paradise" % Settings.versions.macroParadise cross CrossVersion.full)
   )
+  .settings(publishSettings)
   .disablePlugins(ScriptedPlugin)
   .dependsOn(util)
 
