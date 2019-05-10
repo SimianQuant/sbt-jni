@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/SimianQuant/sbt-jni.svg?branch=master)](https://travis-ci.org/SimianQuant/sbt-jni)
 [![Build status](https://ci.appveyor.com/api/projects/status/ubaj4l9yv4e00fue?svg=true)](https://ci.appveyor.com/project/harshad-deo/sbt-jni)
+[![Download](https://api.bintray.com/packages/harshad-deo/sbt-plugins/sbt-jni/images/download.svg)](https://bintray.com/harshad-deo/sbt-plugins/sbt-jni/_latestVersion)
 
 sbt-jni
 ===
@@ -38,7 +39,7 @@ Additionally, `javah` should be on the path.
 
 This plugin wraps the JDK `javah` command.
 
-Run `sbt-javah` to generate C header files with prototypes for any methods marked as native. For example, the Scala class
+Run `sbt javah` to generate C header files with prototypes for any methods marked as native. For example, the Scala class
 
 ```scala
 package org.example
