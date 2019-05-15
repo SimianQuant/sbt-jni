@@ -128,7 +128,8 @@ This plugin packages native libraries produced by JniNative in a way that they c
 
 2. Initialize the native build tool from a template:
 
-   Run `sbt "nativeInit <libname>"`
+    1. Create the `src/native` directory in the `native` project
+    1. Run `nativeInit <libname>` in the `native` project in the sbt console
 
 3. Implement core project:
 
@@ -136,7 +137,7 @@ This plugin packages native libraries produced by JniNative in a way that they c
 
 4. Generate native headers:
 
-   Run `sbt javah`
+   Run `sbt javah` in the `core` project
 
 5. Implement native headers:
 
